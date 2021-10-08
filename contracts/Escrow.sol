@@ -12,27 +12,27 @@ contract Escrow {
 
     State currentState;
 
-    address buyer;
-    address seller;
+    address public buyer;
+    address payable public seller;
 
-    modifier buyerOnly(address _buyer) {
+    modifier buyerOnly() {
         require(msg.sender == buyer);
         _;
     }
 
-    constructor(address _buyer, address _seller) {
+    constructor(address _buyer, address payable _seller) {
         buyer = _buyer;
         seller = _seller;
     }
 
-    function comfirmPayment() payable buyerOnly {
+    function comfirmPayment() payable buyerOnly public {
         require(currentState == State.AWAITING_PAYMENT);
         currentState = State.AWAITING_DELIVERY;
     }
 
-    function confirmDelivery() buyerOnly {
+    function confirmDelivery() payable buyerOnly public {
         require(currentState == State.AWAITING_DELIVERY);
-        seller.send(address(this).balance);
+        seller.transfer(address(this).balance);
         currentState = State.COMPLETE;
     }
 }
