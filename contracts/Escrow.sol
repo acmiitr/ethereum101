@@ -14,7 +14,8 @@ contract Escrow {
 
     address public buyer;
     address payable public seller;
-
+    uint256 public payment;
+    
     modifier buyerOnly() {
         require(msg.sender == buyer);
         _;
@@ -25,9 +26,10 @@ contract Escrow {
         seller = _seller;
     }
 
-    function comfirmPayment() payable buyerOnly public {
+    function comfirmPayment() payable buyerOnly public{
         require(currentState == State.AWAITING_PAYMENT);
         currentState = State.AWAITING_DELIVERY;
+        payment = msg.value;
     }
 
     function confirmDelivery() payable buyerOnly public {
